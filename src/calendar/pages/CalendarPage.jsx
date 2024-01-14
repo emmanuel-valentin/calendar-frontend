@@ -1,9 +1,9 @@
-import { localizer } from '../helpers';
+import { localizer } from '../../helpers';
 
 import { Calendar } from 'react-big-calendar';
 
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import { getMessagesEs } from '../helpers/getMessages';
+import { getMessagesEs } from '../../helpers/getMessages';
 import {
   CalendarEvent,
   CalendarModal,
