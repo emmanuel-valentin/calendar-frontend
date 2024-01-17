@@ -10,7 +10,7 @@ import {
 } from '../store/calendar/calendarSlice';
 import calendarApi from '../api/calendarApi';
 import { convertEventsToDateEvents } from '../helpers';
-import { useAuthStore } from './useAuthStore'
+import { useAuthStore } from './useAuthStore';
 
 export const useCalendarStore = () => {
   const { events, activeEvent } = useSelector((state) => state.calendar);
@@ -47,14 +47,12 @@ export const useCalendarStore = () => {
       });
     }
   };
-  
+
   const startDeletingEvent = async () => {
     try {
       await calendarApi.delete(`/events/${activeEvent.id}`);
       dispatch(onDeleteEvent());
-    }
-    catch (err) {
-
+    } catch (err) {
       console.log(err);
       Swal.fire({
         title: 'Error actualizando la nota',
@@ -68,12 +66,8 @@ export const useCalendarStore = () => {
   const startLoadingEvents = async () => {
     try {
       const { data } = await calendarApi.get('/events');
-
-      if (localStorage.getItem('token')) {
-        const events = convertEventsToDateEvents(data.events);
-        dispatch(onLoadEvents(events));
-      }
-
+      const events = convertEventsToDateEvents(data.events);
+      dispatch(onLoadEvents(events));
     } catch (err) {
       console.log(err);
     }

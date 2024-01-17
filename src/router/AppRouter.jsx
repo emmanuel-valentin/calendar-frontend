@@ -11,7 +11,7 @@ const AppRouter = () => {
     checkAuthToken();
   }, []);
 
-  if (status === 'cheking') {
+  if (status === 'checking') {
     return <h1>Cargando...</h1>;
   }
 

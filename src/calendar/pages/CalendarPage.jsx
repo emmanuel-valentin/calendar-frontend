@@ -51,9 +51,8 @@ const CalendarPage = () => {
   };
   
   useEffect(() => {
-    console.log('Me ejecuto');
     startLoadingEvents();
-  }, [user]);
+  }, []);
 
   return (
     <>
