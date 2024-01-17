@@ -1,13 +1,20 @@
 import { useDispatch, useSelector } from 'react-redux';
+import Swal from 'sweetalert2';
+
 import {
   onAddNewEvent,
   onDeleteEvent,
+  onLoadEvents,
   onSetActiveEvent,
   onUpdateEvent,
 } from '../store/calendar/calendarSlice';
+import calendarApi from '../api/calendarApi';
+import { convertEventsToDateEvents } from '../helpers';
+import { useAuthStore } from './useAuthStore'
 
 export const useCalendarStore = () => {
   const { events, activeEvent } = useSelector((state) => state.calendar);
+  const { user } = useAuthStore();
   const dispatch = useDispatch();
 
   const setActiveEvent = (calendarEvent) => {
@@ -17,19 +24,59 @@ export const useCalendarStore = () => {
   const startSavingEvent = async (calendarEvent) => {
     // TODO: Pegarle al backend jejep
 
-    if (calendarEvent._id) {
-      // Actualizando
-      dispatch(onUpdateEvent({ ...calendarEvent }));
-    } else {
+    try {
+      if (calendarEvent.id) {
+        // Actualizando
+        await calendarApi.put(`/events/${calendarEvent.id}`, calendarEvent);
+
+        dispatch(onUpdateEvent({ ...calendarEvent, user }));
+
+        return;
+      }
+
       // Creando
-      dispatch(onAddNewEvent({ ...calendarEvent, _id: new Date().getTime() }));
+      const { data } = await calendarApi.post('/events', calendarEvent);
+      dispatch(onAddNewEvent({ ...calendarEvent, id: data.event.id, user }));
+    } catch (err) {
+      console.log(err);
+      Swal.fire({
+        title: 'Error actualizando la nota',
+        text: err.response.data.msg,
+        icon: 'error',
+        confirmButtonColor: '#3085d6',
+      });
+    }
+  };
+  
+  const startDeletingEvent = async () => {
+    try {
+      await calendarApi.delete(`/events/${activeEvent.id}`);
+      dispatch(onDeleteEvent());
+    }
+    catch (err) {
+
+      console.log(err);
+      Swal.fire({
+        title: 'Error actualizando la nota',
+        text: err.response.data.msg,
+        icon: 'error',
+        confirmButtonColor: '#3085d6',
+      });
     }
   };
 
-  const startDeletingEvent = () => {
-    // TODO: Pegarle al backend jejep
+  const startLoadingEvents = async () => {
+    try {
+      const { data } = await calendarApi.get('/events');
 
-    dispatch(onDeleteEvent());
+      if (localStorage.getItem('token')) {
+        const events = convertEventsToDateEvents(data.events);
+        dispatch(onLoadEvents(events));
+      }
+
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return {
@@ -41,6 +88,7 @@ export const useCalendarStore = () => {
     /* Eventos */
     setActiveEvent,
     startDeletingEvent,
+    startLoadingEvents,
     startSavingEvent,
   };
 };

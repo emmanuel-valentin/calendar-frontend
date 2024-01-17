@@ -12,38 +12,48 @@ import {
   Navbar,
 } from '../components';
 import { useUiStore } from '../../hooks/useUiStore';
-import { useCalendarStore } from '../../hooks/';
-
-const eventStyleGetter = (event, start, end, isSelected) => {
-  const style = {
-    backgroundColor: '#367CF7',
-    borderRadius: '10px',
-    height: '50px',
-    opacity: 0.8,
-    color: 'white',
-  };
-
-  return {
-    style,
-  };
-};
+import { useAuthStore, useCalendarStore } from '../../hooks/';
+import { useEffect } from 'react';
 
 const CalendarPage = () => {
   const lastView = localStorage.getItem('lastView') || 'month';
   const { openDateModal } = useUiStore();
-  const { events, setActiveEvent } = useCalendarStore();
+  const { events, setActiveEvent, startLoadingEvents } = useCalendarStore();
+  const { user } = useAuthStore();
+
+  const eventStyleGetter = (event) => {
+    const isMyEvent =
+      user.uid === event.user._id || user.uid === event.user.uid;
+
+    const style = {
+      backgroundColor: isMyEvent ? '#367CF7' : '#465660',
+      borderRadius: '10px',
+      height: '50px',
+      opacity: 0.8,
+      color: 'white',
+    };
+
+    return {
+      style,
+    };
+  };
 
   const onDoubleClick = () => {
     openDateModal();
   };
-
+  
   const onSelect = (event) => {
     setActiveEvent(event);
   };
-
+  
   const onViewChange = (event) => {
     localStorage.setItem('lastView', event);
   };
+  
+  useEffect(() => {
+    console.log('Me ejecuto');
+    startLoadingEvents();
+  }, [user]);
 
   return (
     <>

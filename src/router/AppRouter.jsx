@@ -2,18 +2,16 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import { AuthPage } from '../auth';
 import { CalendarPage } from '../calendar';
 import { useAuthStore } from '../hooks';
-import { useEffect } from 'react';
+import { useEffect } from 'react'
 
 const AppRouter = () => {
-  // const authStatus = 'not-authenticated';
-  // const authStatus = 'authenticated';
   const { status, checkAuthToken } = useAuthStore();
 
   useEffect(() => {
     checkAuthToken();
   }, []);
 
-  if (status == 'cheking') {
+  if (status === 'cheking') {
     return <h1>Cargando...</h1>;
   }
 
