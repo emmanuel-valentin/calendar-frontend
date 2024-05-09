@@ -7,7 +7,9 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import { useCalendarModal } from '../hooks';
 import { useUiStore } from '../../hooks/useUiStore';
 
-Modal.setAppElement('#root');
+if (import.meta.env.NODE_ENV !== 'test') {
+  Modal.setAppElement('#root');
+}
 
 const CalendarModal = () => {
   const {
